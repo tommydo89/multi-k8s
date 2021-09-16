@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+# UPDATE API
+kind: Ingress
+metadata:
+  name: ingress-service
+  annotations:
+    kubernetes.io/ingress.class: 'nginx'
+    nginx.ingress.kubernetes.io/use-regex: 'true' # uses regex for matching on the path of the request
+    # ADD ANNOTATION
+    nginx.ingress.kubernetes.io/rewrite-target: /$1 # rewrites the path to the subpath that follows what was matched on the path
+    # UPDATE ANNOTATION
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /?(.*) # routes to the client service by matching routes that begin with '/'
+            # UPDATE PATH
+            pathType: Prefix
+            # ADD PATHTYPE
+            backend:
+              service:
+                # UPDATE SERVICE FIELDS
+                name: client-cluster-ip-service
+                port: 
+                  number: 3000 # the port that the client is exposed on
+          - path: /api/?(.*) # routes to the server service by matching routes that begin with '/api/'
+            # UPDATE PATH
+            pathType: Prefix
+            # ADD PATHTYPE
+            backend:
+              service:
+                # UPDATE SERVICE FIELDS
+                name: server-cluster-ip-service
+                port: 
+                  number: 5000 # the port that the server is exposed on 
